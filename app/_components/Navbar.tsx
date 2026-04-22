@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ContactModal from "./ContactModal";
+import BookSpeaker from "./BookSpeaker";
 
 const links = ["Members", "Tracks", "Booking", "Collabs"];
 
@@ -11,16 +12,20 @@ function Logo() {
       <div
         style={{
           width: 36, height: 36,
-          border: "2px solid var(--ink)",
           borderRadius: 4,
           background: "var(--amber)",
-          display: "grid", placeItems: "center",
-          color: "#000", fontWeight: 900, fontSize: 15,
-          boxShadow: "3px 3px 0 0 var(--ink)",
           flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 5,
         }}
       >
-        OB
+        <svg viewBox="0 0 600 380" width="100%" aria-hidden>
+          <g fill="#000">
+            <path d="M 40 100 Q 170 70, 285 150 L 285 290 Q 170 220, 60 240 Z" />
+            <path d="M 560 100 Q 430 70, 315 150 L 315 290 Q 430 220, 540 240 Z" />
+            <path d="M 270 290 Q 300 310, 330 290 L 328 320 Q 300 332, 272 320 Z" />
+          </g>
+        </svg>
       </div>
       <span style={{ fontWeight: 900, fontSize: 18, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>
         Open Book
