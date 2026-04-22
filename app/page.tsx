@@ -1,10 +1,9 @@
 import Navbar from "./_components/Navbar";
 import Hero from "./_components/Hero";
 import About from "./_components/About";
-import Sound from "./_components/Sound";
-import WhatWeDo from "./_components/WhatWeDo";
-import Collab from "./_components/Collab";
+import Tracks from "./_components/Sound";
 import Booking from "./_components/Booking";
+import Collab from "./_components/Collab";
 import Footer from "./_components/Footer";
 
 export default function Home() {
@@ -14,10 +13,9 @@ export default function Home() {
       <main>
         <Hero />
         <About />
-        <Sound />
-        <WhatWeDo />
-        <Collab />
+        <Tracks />
         <Booking />
+        <Collab />
       </main>
       <Footer />
     </>

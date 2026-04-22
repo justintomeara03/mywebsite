@@ -1,221 +1,140 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import ContactModal from "./ContactModal";
 
-const navLinks = [
-  { label: "About",      href: "#about" },
-  { label: "Our Sound",  href: "#sound" },
-  { label: "What We Do", href: "#what-we-do" },
-  { label: "Collab",     href: "#collab" },
-  { label: "Booking",    href: "#booking" },
-];
+const links = ["Members", "Tracks", "Booking", "Collabs"];
+
+function Logo() {
+  return (
+    <a href="#" style={{ display: "flex", alignItems: "center", gap: 10, whiteSpace: "nowrap", flexShrink: 0 }}>
+      <div
+        style={{
+          width: 36, height: 36,
+          border: "2px solid var(--ink)",
+          borderRadius: 4,
+          background: "var(--amber)",
+          display: "grid", placeItems: "center",
+          color: "#000", fontWeight: 900, fontSize: 15,
+          boxShadow: "3px 3px 0 0 var(--ink)",
+          flexShrink: 0,
+        }}
+      >
+        OB
+      </div>
+      <span style={{ fontWeight: 900, fontSize: 18, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>
+        Open Book
+      </span>
+    </a>
+  );
+}
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const idFor = (label: string) => label === "Collabs" ? "collab" : label.toLowerCase();
 
-  const handleNavClick = (href: string) => {
-    setMenuOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+  const scrollTo = (id: string) => {
+    setOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <nav
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: "var(--bg)",
-        borderBottom: scrolled ? "2px solid var(--text)" : "2px solid transparent",
-        transition: "border-color 0.25s ease",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "0 1.5rem",
-          height: "66px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Logo */}
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-brand)",
-              fontWeight: 900,
-              fontSize: "1.45rem",
-              letterSpacing: "-0.02em",
-              color: "var(--text)",
-            }}
-          >
-            Open{" "}
-            <span style={{ color: "var(--accent)" }}>Book</span>
-          </span>
-        </button>
+    <>
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
 
-        {/* Desktop links */}
-        <ul
-          className="hidden-mobile"
-          style={{ display: "flex", gap: "0.1rem", listStyle: "none", alignItems: "center" }}
-        >
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <button
-                onClick={() => handleNavClick(link.href)}
+      {/* Desktop nav */}
+      <nav
+        style={{
+          position: "sticky", top: 0, zIndex: 40,
+          background: "rgba(14,14,14,0.85)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          borderBottom: "2px solid var(--line)",
+        }}
+        className="nav-desktop"
+      >
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Logo />
+          <div style={{ display: "flex", gap: 4, border: "2px solid var(--ink)", borderRadius: 40, padding: 4, background: "var(--bg-2)" }}>
+            {links.map((l) => (
+              <PillLink key={l} label={l} onClick={() => scrollTo(idFor(l))} amber={l === "Booking" || l === "Collabs"} />
+            ))}
+          </div>
+          <button onClick={() => setContactOpen(true)} className="btn amber" style={{ padding: "12px 18px", fontSize: 12 }}>
+            CONTACT
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile nav */}
+      <nav
+        style={{
+          position: "sticky", top: 0, zIndex: 40,
+          background: "rgba(14,14,14,0.92)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          borderBottom: "2px solid var(--ink)",
+        }}
+        className="nav-mobile"
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px" }}>
+          <Logo />
+          <button onClick={() => setOpen((o) => !o)} className="btn amber" style={{ padding: "10px 14px", fontSize: 12, boxShadow: "3px 3px 0 0 var(--ink)" }}>
+            {open ? "CLOSE" : "MENU"}
+          </button>
+        </div>
+        {open && (
+          <div style={{ borderTop: "2px solid var(--ink)", padding: "10px 18px 22px", background: "var(--bg)" }}>
+            {links.map((l) => (
+              <a
+                key={l}
+                href={"#" + idFor(l)}
+                onClick={(e) => { e.preventDefault(); scrollTo(idFor(l)); }}
                 style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-brand)",
-                  fontWeight: 700,
-                  fontSize: "0.88rem",
-                  color: "var(--text-muted)",
-                  padding: "0.45rem 0.8rem",
-                  borderRadius: "var(--radius-sm)",
-                  transition: "color 0.15s ease, background 0.15s ease",
-                  letterSpacing: "0.01em",
-                }}
-                onMouseEnter={(e) => {
-                  const b = e.currentTarget as HTMLButtonElement;
-                  b.style.color = "var(--text)";
-                  b.style.background = "rgba(240,237,228,0.07)";
-                }}
-                onMouseLeave={(e) => {
-                  const b = e.currentTarget as HTMLButtonElement;
-                  b.style.color = "var(--text-muted)";
-                  b.style.background = "transparent";
+                  display: "flex", justifyContent: "space-between",
+                  padding: "16px 0", borderBottom: "1px solid var(--line)",
+                  fontSize: 24, fontWeight: 900, letterSpacing: "-0.01em",
                 }}
               >
-                {link.label}
-              </button>
-            </li>
-          ))}
-          <li style={{ marginLeft: "0.5rem" }}>
-            <button
-              onClick={() => handleNavClick("#booking")}
-              className="btn-primary"
-              style={{ padding: "0.45rem 1.2rem", fontSize: "0.88rem" }}
-            >
-              Book Us
-            </button>
-          </li>
-        </ul>
-
-        {/* Hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-          className="show-mobile"
-          style={{
-            background: "none",
-            border: "2px solid var(--text)",
-            borderRadius: "var(--radius-sm)",
-            cursor: "pointer",
-            padding: "0.4rem 0.5rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              style={{
-                display: "block",
-                width: "22px",
-                height: "2px",
-                background: "var(--text)",
-                transition: "all 0.25s ease",
-                transform:
-                  menuOpen && i === 0 ? "rotate(45deg) translate(4px, 4px)" :
-                  menuOpen && i === 2 ? "rotate(-45deg) translate(4px, -4px)" :
-                  menuOpen && i === 1 ? "scaleX(0)" : "none",
-              }}
-            />
-          ))}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      <div
-        style={{
-          overflow: "hidden",
-          maxHeight: menuOpen ? "340px" : "0",
-          transition: "max-height 0.3s ease",
-          background: "var(--bg)",
-          borderTop: menuOpen ? "2px solid var(--text)" : "none",
-        }}
-      >
-        <ul
-          style={{
-            listStyle: "none",
-            padding: "1rem 1.5rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.15rem",
-          }}
-        >
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <button
-                onClick={() => handleNavClick(link.href)}
-                style={{
-                  width: "100%",
-                  textAlign: "left",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-brand)",
-                  fontWeight: 700,
-                  fontSize: "1rem",
-                  color: "var(--text-muted)",
-                  padding: "0.65rem 0.5rem",
-                  transition: "color 0.15s ease",
-                  borderBottom: "1px solid var(--border-muted)",
-                }}
-              >
-                {link.label}
-              </button>
-            </li>
-          ))}
-          <li style={{ paddingTop: "0.75rem" }}>
-            <button
-              onClick={() => handleNavClick("#booking")}
-              className="btn-primary"
-              style={{ width: "100%" }}
-            >
-              Book Us
-            </button>
-          </li>
-        </ul>
-      </div>
+                <span>{l}</span>
+                <span style={{ color: "var(--amber)" }}>→</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </nav>
 
       <style>{`
-        @media (min-width: 768px) {
-          .hidden-mobile { display: flex !important; }
-          .show-mobile   { display: none !important; }
-        }
+        .nav-desktop { display: block !important; }
+        .nav-mobile  { display: none !important; }
         @media (max-width: 767px) {
-          .hidden-mobile { display: none !important; }
-          .show-mobile   { display: flex !important; }
+          .nav-desktop { display: none !important; }
+          .nav-mobile  { display: block !important; }
         }
       `}</style>
-    </nav>
+    </>
+  );
+}
+
+function PillLink({ label, onClick, amber }: { label: string; onClick: () => void; amber?: boolean }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        padding: "10px 18px", fontSize: 13, fontWeight: 700,
+        letterSpacing: "0.04em", textTransform: "uppercase",
+        borderRadius: 40, border: "none",
+        background: hov ? "var(--amber)" : "transparent",
+        color: hov ? "#000" : amber ? "var(--amber)" : "var(--ink)",
+        transition: "all .15s", cursor: "pointer",
+      }}
+    >
+      {label}
+    </button>
   );
 }

@@ -1,198 +1,155 @@
 "use client";
 
-import { useRef } from "react";
-import { useInView } from "./_hooks/useInView";
+import { useState } from "react";
+import { SectionHeader } from "./Primitives";
 
 const services = [
   {
-    emoji: "🎛️",
-    number: "01",
-    title: "DJ Sets",
-    description:
-      "From intimate club nights to festival main stages — we bring the energy every single time. Expect a journey, not a playlist. We read the room, we feel the crowd, and we keep things moving.",
-    tags: ["Club Nights", "Festivals", "Private Events", "Parties"],
+    num: "S.01",
+    title: "Producing",
+    body: "We build records from idea to master. Sessions are long-form; decisions stay reversible until the final mix.",
+    items: ["Artist development", "Full production", "In-studio writing", "Session players"],
   },
   {
-    emoji: "🎚️",
-    number: "02",
-    title: "Music Production",
-    description:
-      "Original beats, full track production, custom instrumentals — whatever the project needs. We like to experiment, which means your music won't sound like a template. Every track is built from scratch.",
-    tags: ["Original Beats", "Full Productions", "Instrumentals", "Custom Tracks"],
+    num: "S.02",
+    title: "Mixing & Mastering",
+    body: "Analog-leaning mixes out of Studio A. Stereo and immersive masters delivered on tape, DSD or digital.",
+    items: ["Mix (stereo / Atmos)", "Master (tape or digital)", "Stem mastering", "Vinyl pre-masters"],
   },
   {
-    emoji: "🤝",
-    number: "03",
-    title: "Collaborations",
-    description:
-      "Open Book means open doors. We love working with vocalists, other producers, visual artists — honestly, anyone who has something interesting to bring to the table. Hit us up.",
-    tags: ["Vocalists", "Artists", "Producers", "Creatives"],
+    num: "S.03",
+    title: "Releases",
+    body: "We self-release through our label arm. Short runs on vinyl and tape, unlimited digital — no perpetual rights contracts.",
+    items: ["Distribution", "Vinyl · Tape runs", "Licensing", "Publishing admin"],
   },
   {
-    emoji: "✨",
-    number: "04",
-    title: "Events",
-    description:
-      "We don't just show up, we show out. Whether we're headlining or helping put together a night from scratch, we care about the experience as much as the music itself.",
-    tags: ["Curating", "Headlining", "Residencies", "Pop-ups"],
+    num: "S.04",
+    title: "Live & Residencies",
+    body: "A rotating live show and curated residencies in intimate rooms. We book our own nights and host invited artists.",
+    items: ["Live shows", "Residencies", "Curation", "Showcase slots"],
   },
 ];
 
 export default function WhatWeDo() {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref);
+  const [active, setActive] = useState(0);
 
   return (
     <section
-      id="what-we-do"
-      ref={ref}
-      className="section-padding"
-      style={{ background: "var(--bg)", borderBottom: "2px solid var(--text)" }}
+      id="work"
+      style={{ position: "relative", background: "var(--bg)", borderBottom: "2px solid var(--ink)", padding: "120px 40px" }}
+      className="wwd-section"
     >
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+      <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+        <SectionHeader num="03" eyebrow="WHAT WE DO" title={<span>Four practices.<br />One studio floor.</span>} />
 
-        {/* Heading */}
-        <div
-          style={{
-            marginBottom: "4rem",
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(24px)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
-          }}
-        >
-          <p className="eyebrow" style={{ marginBottom: "0.75rem" }}>What we do</p>
-          <h2
-            style={{
-              fontFamily: "var(--font-brand)",
-              fontWeight: 900,
-              fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.05,
-              marginBottom: "1rem",
-              color: "var(--text)",
-            }}
-          >
-            We do a lot of{" "}
-            <span style={{ color: "var(--accent)" }}>things</span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-brand)",
-              fontSize: "1rem",
-              fontWeight: 500,
-              color: "var(--text-muted)",
-              maxWidth: "460px",
-            }}
-          >
-            Turns out when you genuinely love music, you end up doing all kinds of stuff around it.
-          </p>
-        </div>
-
-        {/* Cards grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1.5rem",
-          }}
-        >
-          {services.map((s, i) => (
-            <div
-              key={s.title}
-              className="card"
-              style={{
-                padding: "1.75rem",
-                opacity: inView ? 1 : 0,
-                transform: inView ? "translateY(0)" : "translateY(32px)",
-                transition: `opacity 0.6s ease ${i * 0.08}s, transform 0.6s ease ${i * 0.08}s, box-shadow 0.15s ease, transform 0.15s ease`,
-                cursor: "default",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.style.transform = "translate(-3px, -3px)";
-                el.style.boxShadow = "7px 7px 0px var(--accent)";
-                el.style.borderColor = "var(--accent)";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.style.transform = inView ? "translateY(0)" : "translateY(32px)";
-                el.style.boxShadow = "var(--shadow)";
-                el.style.borderColor = "var(--text)";
-              }}
-            >
-              {/* Number + emoji row */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  marginBottom: "1.25rem",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-brand)",
-                    fontWeight: 900,
-                    fontSize: "2.5rem",
-                    color: "var(--accent)",
-                    lineHeight: 1,
-                    letterSpacing: "-0.03em",
-                  }}
-                >
-                  {s.number}
-                </span>
-                <span style={{ fontSize: "1.6rem" }}>{s.emoji}</span>
-              </div>
-
-              <h3
-                style={{
-                  fontFamily: "var(--font-brand)",
-                  fontWeight: 900,
-                  fontSize: "1.3rem",
-                  letterSpacing: "-0.02em",
-                  color: "var(--text)",
-                  marginBottom: "0.75rem",
-                }}
-              >
-                {s.title}
-              </h3>
-
-              <p
-                style={{
-                  fontFamily: "var(--font-brand)",
-                  fontSize: "0.9rem",
-                  fontWeight: 500,
-                  color: "var(--text-muted)",
-                  lineHeight: 1.7,
-                  marginBottom: "1.25rem",
-                }}
-              >
-                {s.description}
-              </p>
-
-              {/* Tags */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                {s.tags.map((tag) => (
-                  <span
-                    key={tag}
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 60, marginTop: 80, alignItems: "start" }} className="wwd-grid">
+          {/* Accordion */}
+          <div style={{ borderTop: "2px solid var(--ink)" }}>
+            {services.map((s, i) => {
+              const open = active === i;
+              return (
+                <div key={s.num} style={{ borderBottom: "2px solid var(--ink)" }}>
+                  <button
+                    onClick={() => setActive(open ? -1 : i)}
                     style={{
-                      fontFamily: "var(--font-brand)",
-                      fontSize: "0.72rem",
-                      fontWeight: 800,
-                      color: "var(--accent)",
-                      border: "2px solid var(--accent)",
-                      borderRadius: "var(--radius-sm)",
-                      padding: "0.15rem 0.55rem",
+                      width: "100%", padding: "32px 8px",
+                      background: "transparent", border: "none", color: "var(--ink)",
+                      display: "flex", alignItems: "center", gap: 20,
+                      cursor: "pointer", textAlign: "left", transition: "background .15s",
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,184,0,0.04)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   >
-                    {tag}
-                  </span>
-                ))}
+                    <span className="num" style={{ fontSize: 13, width: 52, flexShrink: 0 }}>{s.num}</span>
+                    <span
+                      style={{
+                        flex: 1,
+                        fontFamily: "var(--font-sans)",
+                        fontWeight: 900,
+                        fontSize: "clamp(28px,4vw,50px)",
+                        letterSpacing: "-0.025em",
+                        lineHeight: 1,
+                        color: open ? "var(--amber)" : "var(--ink)",
+                      }}
+                    >
+                      {s.title}
+                    </span>
+                    <span
+                      style={{
+                        width: 44, height: 44,
+                        border: "2px solid var(--ink)",
+                        borderRadius: 3,
+                        display: "grid", placeItems: "center",
+                        background: open ? "var(--amber)" : "transparent",
+                        color: open ? "#000" : "var(--ink)",
+                        transform: open ? "rotate(45deg)" : "rotate(0deg)",
+                        transition: "transform .25s, background .2s",
+                        flexShrink: 0, fontSize: 18, fontWeight: 800,
+                      }}
+                    >
+                      +
+                    </span>
+                  </button>
+
+                  <div style={{ maxHeight: open ? 400 : 0, overflow: "hidden", transition: "max-height .35s ease" }}>
+                    <div style={{ padding: "0 8px 32px 72px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }} className="wwd-panel">
+                      <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: "var(--ink-dim)" }}>{s.body}</p>
+                      <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                        {s.items.map((it) => (
+                          <li key={it} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: "1px solid var(--line)", fontSize: 14 }}>
+                            <span style={{ color: "var(--amber)" }}>—</span>{it}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Sticky right panel */}
+          <div style={{ position: "sticky", top: 100 }} className="wwd-sticky">
+            <div className="stripes" style={{ height: 380, border: "2px solid var(--ink)", borderRadius: 4, boxShadow: "6px 6px 0 0 var(--amber)", position: "relative" }}>
+              <div style={{ position: "absolute", top: 14, left: 14, display: "flex", gap: 8, alignItems: "center" }}>
+                <span className="label">IMAGE</span>
+                <span className="mono" style={{ fontSize: 10, color: "var(--amber)" }}>STUDIO A · LIVE ROOM</span>
+              </div>
+              <div style={{ position: "absolute", bottom: 14, left: 14, right: 14, display: "flex", justifyContent: "space-between", alignItems: "end" }}>
+                <div className="serif" style={{ fontSize: 24, fontStyle: "italic" }}>"Cut to tape, always."</div>
+                <span className="mono" style={{ fontSize: 11, color: "var(--ink-dim)" }}>03 / 07</span>
               </div>
             </div>
-          ))}
+
+            <div className="card" style={{ marginTop: 20, padding: 24 }}>
+              <div className="label" style={{ marginBottom: 10 }}>ENGAGEMENT FORMATS</div>
+              {[
+                ["Weekly residency", "Monthly"],
+                ["Full record", "8–14 wks"],
+                ["Mix only", "2–4 wks"],
+                ["One-off session", "2 days"],
+              ].map(([k, v], i, arr) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "14px 0", borderBottom: i < arr.length - 1 ? "1px solid var(--line)" : "none" }}>
+                  <span style={{ fontWeight: 700 }}>{k}</span>
+                  <span className="mono" style={{ fontSize: 13, color: "var(--amber)" }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 767px) {
+          .wwd-section { padding: 64px 20px !important; }
+          .wwd-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .wwd-sticky { position: static !important; }
+          .wwd-sticky > div:first-child { height: 240px !important; }
+          .wwd-panel { grid-template-columns: 1fr !important; }
+          button > span[style*="clamp"] { font-size: 32px !important; }
+          button > span:first-of-type { width: auto !important; }
+        }
+      `}</style>
     </section>
   );
 }

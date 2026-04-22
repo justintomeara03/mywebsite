@@ -1,206 +1,144 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
 @import "tailwindcss";
 
-/* ─── Brand tokens ─────────────────────────────────────────── */
+/* ─── Design tokens ─────────────────────────────────────────── */
 :root {
-  /* 3-color palette */
-  --bg:        #111111;
-  --surface:   #1C1C1C;
-  --text:      #F0EDE4;
-  --accent:    #FFB800;
-
-  /* Derived */
-  --text-muted:   rgba(240, 237, 228, 0.55);
-  --text-dim:     rgba(240, 237, 228, 0.3);
-  --border:       var(--text);
-  --border-muted: rgba(240, 237, 228, 0.2);
-
-  /* Brutalist shadow */
-  --shadow:       4px 4px 0px var(--text);
-  --shadow-accent: 4px 4px 0px var(--accent);
-  --shadow-sm:    3px 3px 0px var(--text);
-
-  /* Border radius — blocky, not pill */
-  --radius:    6px;
-  --radius-sm: 4px;
-
-  /* Font */
-  --font-brand: 'Nunito', sans-serif;
+  --bg:      #0E0E0E;
+  --bg-2:    #161616;
+  --ink:     #F0EDE4;
+  --ink-dim: #A8A39A;
+  --line:    #262626;
+  --amber:   #FFB800;
+  --shadow:        4px 4px 0 0 var(--ink);
+  --shadow-amber:  4px 4px 0 0 var(--amber);
+  --radius: 4px;
 }
 
 /* ─── Base reset ────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 
-html {
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent) var(--bg);
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: var(--font-brand);
+  color: var(--ink);
+  font-family: var(--font-sans, 'Nunito', sans-serif);
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   line-height: 1.6;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(rgba(240,237,228,0.035) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 0%, rgba(255,184,0,0.06), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(255,184,0,0.04), transparent 55%);
+  background-size: 22px 22px, 100% 100%, 100% 100%;
+  background-position: 0 0, 0 0, 0 0;
+  background-attachment: fixed;
 }
 
-::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: var(--bg); }
-::-webkit-scrollbar-thumb  { background: var(--accent); border-radius: 0; }
-
-::selection {
-  background: var(--accent);
-  color: var(--bg);
+/* Grain overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
 }
+
+#root-wrap { position: relative; z-index: 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+::-webkit-scrollbar       { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border: 2px solid #0a0a0a; }
+
+::selection { background: var(--amber); color: #000; }
+*:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+input, textarea, select {
+  font-family: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}
+input::placeholder, textarea::placeholder { color: #5e5a52; }
+
+/* ─── Typography helpers ─────────────────────────────────────── */
+.mono  { font-family: var(--font-mono, 'JetBrains Mono', monospace); font-weight: 500; }
+.label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.num { font-family: var(--font-mono, 'JetBrains Mono', monospace); color: var(--amber); font-weight: 500; }
 
 /* ─── Buttons ───────────────────────────────────────────────── */
-.btn-primary {
+.btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  background: var(--accent);
+  gap: 10px;
+  padding: 14px 20px;
+  border: 2px solid var(--ink);
+  background: var(--ink);
   color: var(--bg);
-  font-family: var(--font-brand);
   font-weight: 800;
-  font-size: 0.95rem;
+  letter-spacing: 0.02em;
   border-radius: var(--radius);
-  border: 2px solid var(--text);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  text-decoration: none;
-  box-shadow: var(--shadow);
-  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-amber);
+  transition: transform .12s ease, box-shadow .12s ease;
+  white-space: nowrap;
+  font-family: inherit;
 }
+.btn:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 0 var(--amber); }
+.btn:active { transform: translate(2px,2px);   box-shadow: 0 0 0 0 var(--amber); }
 
-.btn-primary:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--text);
-}
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: 4px 4px 0 0 var(--ink); }
+.btn.ghost:hover { border-color: var(--amber); color: var(--amber); }
+.btn.ghost:disabled { opacity: 0.35; pointer-events: none; }
 
-.btn-primary:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--text);
-}
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  background: transparent;
-  color: var(--text);
-  font-family: var(--font-brand);
-  font-weight: 800;
-  font-size: 0.95rem;
-  border-radius: var(--radius);
-  border: 2px solid var(--text);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
-  text-decoration: none;
-  box-shadow: var(--shadow);
-  letter-spacing: 0.01em;
-}
-
-.btn-outline:hover {
-  background: var(--text);
-  color: var(--bg);
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--accent);
-}
-
-.btn-outline:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--accent);
-}
+.btn.amber { background: var(--amber); border-color: var(--amber); color: #0a0a0a; box-shadow: 4px 4px 0 0 var(--ink); }
+.btn.amber:hover { box-shadow: 6px 6px 0 0 var(--ink); }
+.btn.amber:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
 /* ─── Cards ─────────────────────────────────────────────────── */
 .card {
-  background: var(--surface);
-  border: 2px solid var(--text);
+  border: 2px solid var(--ink);
   border-radius: var(--radius);
+  background: var(--bg-2);
   box-shadow: var(--shadow);
 }
 
-/* ─── Section padding ───────────────────────────────────────── */
-.section-padding {
-  padding: 6rem 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .section-padding {
-    padding: 8rem 2.5rem;
-  }
-}
-
-/* ─── Section divider ───────────────────────────────────────── */
-.section-divider {
-  border: none;
-  border-top: 2px solid var(--text);
-  margin: 0;
-}
-
-/* ─── Accent label (eyebrow text) ───────────────────────────── */
-.eyebrow {
-  font-family: var(--font-brand);
-  font-weight: 800;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-/* ─── Form inputs ────────────────────────────────────────────── */
-.form-input {
-  width: 100%;
-  background: var(--bg);
-  border: 2px solid var(--border-muted);
-  border-radius: var(--radius);
-  padding: 0.85rem 1.1rem;
-  color: var(--text);
-  font-family: var(--font-brand);
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.form-input::placeholder {
-  color: var(--text-dim);
-  font-weight: 500;
-}
-
-.form-input:focus {
-  border-color: var(--accent);
-  box-shadow: 3px 3px 0px var(--accent);
-}
-
-.form-input option {
-  background: var(--surface);
-  color: var(--text);
+/* ─── Stripe placeholder ─────────────────────────────────────── */
+.stripes {
+  background-image: repeating-linear-gradient(45deg, rgba(240,237,228,.06) 0 10px, rgba(240,237,228,.02) 10px 20px);
+  background-color: #1a1a1a;
 }
 
 /* ─── Entrance animation ─────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+.rise    { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+.rise.d1 { animation-delay: .08s; }
+.rise.d2 { animation-delay: .16s; }
+.rise.d3 { animation-delay: .24s; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+/* ─── EQ bar animations ──────────────────────────────────────── */
+@keyframes eq1 { 0%,100% { height: 30%; } 50% { height: 85%; } }
+@keyframes eq2 { 0%,100% { height: 60%; } 50% { height: 25%; } }
+@keyframes eq3 { 0%,100% { height: 45%; } 50% { height: 95%; } }
 
-/* ─── Accent underline heading helper ───────────────────────── */
-.accent-word {
-  color: var(--accent);
+/* ─── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; opacity: 1; }
 }

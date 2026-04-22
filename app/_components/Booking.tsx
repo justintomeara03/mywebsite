@@ -1,261 +1,137 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useInView } from "./_hooks/useInView";
+import { useState } from "react";
+import SectionHead from "./SectionHead";
+import Field from "./Field";
+import { formatPhone, formatName, formatEmail, formatDate } from "./formatters";
 
-const eventTypes = ["House Party", "Club Night", "Festival", "Private Event", "Corporate Event", "Other"];
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwIFCU8XbPMGhRmt0CYfJ8GoaBSz-IfeERI8j-ALxZ5ZvXG2lNm0OlKnm-UPBEeY0LYoA/exec";
 
-type FormState = "idle" | "submitting" | "success";
+type Status = "idle" | "sending" | "sent" | "error";
 
 export default function Booking() {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref);
+  const [data, setData] = useState({ name: "", email: "", phone: "", date: "", notes: "" });
+  const [status, setStatus] = useState<Status>("idle");
 
-  const [form, setForm] = useState({ name: "", email: "", eventType: "", date: "", location: "", details: "" });
-  const [errors, setErrors] = useState<Partial<typeof form>>({});
-  const [formState, setFormState] = useState<FormState>("idle");
-
-  const validate = () => {
-    const e: Partial<typeof form> = {};
-    if (!form.name.trim()) e.name = "Name is required.";
-    if (!form.email.trim()) e.email = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Doesn't look like a valid email.";
-    if (!form.eventType) e.eventType = "What kind of event is it?";
-    if (!form.date) e.date = "When's the event?";
-    if (!form.location.trim()) e.location = "Where's it happening?";
-    if (!form.details.trim()) e.details = "Give us a few details about the event.";
-    return e;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
-    setErrors({});
-    setFormState("submitting");
-    await new Promise((r) => setTimeout(r, 1200));
-    setFormState("success");
-  };
-
-  const errBorder = (field: keyof typeof form): React.CSSProperties =>
-    errors[field] ? { borderColor: "var(--accent)" } : {};
+    setStatus("sending");
+    try {
+      await fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sheet: "Booking",
+          row: [new Date().toISOString(), data.name, data.email, data.phone, data.date, data.notes],
+        }),
+      });
+      setStatus("sent");
+      setData({ name: "", email: "", phone: "", date: "", notes: "" });
+    } catch {
+      setStatus("error");
+    }
+  }
 
   return (
     <section
       id="booking"
-      ref={ref}
-      className="section-padding"
-      style={{ background: "var(--bg)", borderBottom: "2px solid var(--text)" }}
+      style={{ padding: "110px 40px", borderBottom: "2px solid var(--ink)" }}
+      className="booking-section"
     >
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <SectionHead
+          num="03"
+          label="BOOK BOOKER"
+          title={<span>Book our <span style={{ color: "var(--amber)" }}>DJ</span>.</span>}
+        />
 
-        {/* Heading */}
         <div
-          style={{
-            marginBottom: "3.5rem",
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(24px)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
-          }}
+          style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, marginTop: 50, alignItems: "start" }}
+          className="booking-grid"
         >
-          <p className="eyebrow" style={{ marginBottom: "0.75rem" }}>Booking</p>
-          <h2
+          {/* Form */}
+          <form
+            onSubmit={handleSubmit}
             style={{
-              fontFamily: "var(--font-brand)",
-              fontWeight: 900,
-              fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.05,
-              marginBottom: "1.25rem",
-              color: "var(--text)",
+              border: "2px solid var(--ink)",
+              borderRadius: 4,
+              background: "var(--bg-2)",
+              boxShadow: "6px 6px 0 0 var(--amber)",
+              padding: 28,
             }}
           >
-            Book{" "}
-            <span style={{ color: "var(--accent)" }}>Open Book</span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-brand)",
-              fontSize: "1rem",
-              fontWeight: 500,
-              color: "var(--text-muted)",
-              maxWidth: "500px",
-              lineHeight: 1.7,
-            }}
-          >
-            Got an event coming up? We&apos;d love to be part of it. Fill in the details below
-            and we&apos;ll get back to you. No ghost, promise.
-          </p>
-        </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="form-row">
+              <Field label="Your name" value={data.name}  onChange={(v) => setData({ ...data, name: v })}  placeholder="First and last" format={formatName} />
+              <Field label="Email"     value={data.email} onChange={(v) => setData({ ...data, email: v })} placeholder="you@domain.com" type="email" format={formatEmail} />
+            </div>
 
-        {/* Form card */}
-        <div
-          className="card"
-          style={{
-            padding: "2.5rem",
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(32px)",
-            transition: "opacity 0.6s ease 0.12s, transform 0.6s ease 0.12s",
-          }}
-        >
-          {formState === "success" ? (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "3rem 1rem",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "1.25rem",
-                animation: "fadeUp 0.5s ease forwards",
-              }}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 0 }} className="form-row">
+              <Field label="Phone" value={data.phone} onChange={(v) => setData({ ...data, phone: v })} placeholder="(000) 000-0000" type="tel" format={formatPhone} />
+              <Field label="Event Date"  value={data.date}  onChange={(v) => setData({ ...data, date: v })}  placeholder="MM-DD-YYYY" format={formatDate} />
+            </div>
+
+            <div style={{ padding: "14px 0" }}>
+              <div className="label" style={{ marginBottom: 8 }}>Notes</div>
+              <textarea
+                rows={4}
+                value={data.notes}
+                onChange={(e) => setData({ ...data, notes: e.target.value })}
+                placeholder="Venue, expected attendance, set length, budget."
+                style={{ fontSize: 15, lineHeight: 1.5, resize: "vertical", padding: "10px 0", borderBottom: "1px solid var(--line)" }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={status === "sending" || status === "sent"}
+              className="btn amber"
+              style={{ width: "100%", justifyContent: "center", marginTop: 10, opacity: status === "sending" ? 0.7 : 1 }}
             >
-              <div
-                style={{
-                  width: "64px",
-                  height: "64px",
-                  background: "var(--accent)",
-                  border: "2px solid var(--text)",
-                  borderRadius: "var(--radius)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.8rem",
-                  boxShadow: "var(--shadow)",
-                  color: "var(--bg)",
-                  fontWeight: 900,
-                }}
-              >
-                ✓
-              </div>
-              <h3
-                style={{
-                  fontFamily: "var(--font-brand)",
-                  fontWeight: 900,
-                  fontSize: "1.6rem",
-                  letterSpacing: "-0.02em",
-                  color: "var(--text)",
-                }}
-              >
-                Booking request sent!
-              </h3>
-              <p style={{ fontFamily: "var(--font-brand)", fontSize: "0.95rem", fontWeight: 500, color: "var(--text-muted)", maxWidth: "340px" }}>
-                We&apos;ll be in touch with the details. This is going to be a good one.
+              {status === "sending" ? "Sending…" : status === "sent" ? "Request sent ✓" : "Send request →"}
+            </button>
+            {status === "error" && (
+              <p style={{ marginTop: 10, fontSize: 13, color: "#e05c5c", fontWeight: 700 }}>
+                Something went wrong — please try again or email us directly.
+              </p>
+            )}
+          </form>
+
+          {/* Info cards */}
+          <div>
+            <div className="card" style={{ padding: 22 }}>
+              <div className="label" style={{ marginBottom: 12 }}>WHAT BOOKER PLAYS</div>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: "var(--ink-dim)" }}>
+                House, UKG, breaks, and whatever the room asks for. 1–4 hour sets, open to b2b.
               </p>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                  gap: "1.25rem",
-                  marginBottom: "1.25rem",
-                }}
-              >
-                <div>
-                  <BookingLabel>Name</BookingLabel>
-                  <input type="text" className="form-input" placeholder="Your name"
-                    value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    style={errBorder("name")} />
-                  {errors.name && <FieldError msg={errors.name} />}
-                </div>
-                <div>
-                  <BookingLabel>Email</BookingLabel>
-                  <input type="email" className="form-input" placeholder="you@email.com"
-                    value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    style={errBorder("email")} />
-                  {errors.email && <FieldError msg={errors.email} />}
-                </div>
-              </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                  gap: "1.25rem",
-                  marginBottom: "1.25rem",
-                }}
-              >
-                <div>
-                  <BookingLabel>Event Type</BookingLabel>
-                  <select className="form-input" value={form.eventType}
-                    onChange={(e) => setForm({ ...form, eventType: e.target.value })}
-                    style={errBorder("eventType")}>
-                    <option value="">Select event type</option>
-                    {eventTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  {errors.eventType && <FieldError msg={errors.eventType} />}
+            <div className="card" style={{ padding: 22, marginTop: 16 }}>
+              <div className="label" style={{ marginBottom: 12 }}>BASICS</div>
+              {[
+                ["Set length",  "1–4 hrs"],
+                ["Travel",      "Based San Jose"],
+                ["Lead time",   "≥ 3 weeks preferred"],
+                ["Contact",     "booker@openbook"],
+              ].map(([k, v], i, a) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: i < a.length - 1 ? "1px solid var(--line)" : "none" }}>
+                  <span className="label">{k}</span>
+                  <span style={{ fontWeight: 700, fontSize: 14 }}>{v}</span>
                 </div>
-                <div>
-                  <BookingLabel>Event Date</BookingLabel>
-                  <input type="date" className="form-input" value={form.date}
-                    onChange={(e) => setForm({ ...form, date: e.target.value })}
-                    style={{ ...errBorder("date"), colorScheme: "dark" }} />
-                  {errors.date && <FieldError msg={errors.date} />}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: "1.25rem" }}>
-                <BookingLabel>Location</BookingLabel>
-                <input type="text" className="form-input" placeholder="City, venue, or general area"
-                  value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  style={errBorder("location")} />
-                {errors.location && <FieldError msg={errors.location} />}
-              </div>
-
-              <div style={{ marginBottom: "2rem" }}>
-                <BookingLabel>Tell us about your event</BookingLabel>
-                <textarea className="form-input" rows={5}
-                  placeholder="Expected crowd size, vibe, set length, anything else we should know..."
-                  value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })}
-                  style={{ ...errBorder("details"), resize: "vertical", minHeight: "120px" }} />
-                {errors.details && <FieldError msg={errors.details} />}
-              </div>
-
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={formState === "submitting"}
-                style={{ width: "100%", fontSize: "1rem", padding: "0.9rem", opacity: formState === "submitting" ? 0.65 : 1 }}
-              >
-                {formState === "submitting" ? "Sending..." : "Send Booking Request 🎤"}
-              </button>
-            </form>
-          )}
+              ))}
+            </div>
+          </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 767px) {
+          .booking-section { padding: 60px 20px !important; }
+          .booking-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .booking-grid form { padding: 20px !important; }
+          .form-row { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </section>
-  );
-}
-
-function BookingLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <label style={{
-      display: "block",
-      fontFamily: "var(--font-brand)",
-      fontSize: "0.8rem",
-      fontWeight: 800,
-      letterSpacing: "0.06em",
-      textTransform: "uppercase",
-      color: "var(--text-muted)",
-      marginBottom: "0.4rem",
-    }}>
-      {children}
-    </label>
-  );
-}
-
-function FieldError({ msg }: { msg: string }) {
-  return (
-    <p style={{
-      color: "var(--accent)",
-      fontSize: "0.78rem",
-      fontWeight: 700,
-      marginTop: "0.3rem",
-      fontFamily: "var(--font-brand)",
-    }}>
-      {msg}
-    </p>
   );
 }

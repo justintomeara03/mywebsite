@@ -1,182 +1,81 @@
 "use client";
 
-import { useRef } from "react";
-import { useInView } from "./_hooks/useInView";
+import SectionHead from "./SectionHead";
 
 const members = [
-  {
-    role: "The DJ",
-    name: "DJ Placeholder",
-    emoji: "🎧",
-    bio: "On the decks, they're in their element. Known for reading a room like a book and flipping the energy at exactly the right moment, they bring a mix of house, tech-house, and anything else that just *works*. No two sets sound the same — that's kind of the whole point.",
-    tags: ["House", "Tech-House", "Club Nights", "Festivals"],
-  },
-  {
-    role: "The Producer",
-    name: "Producer Placeholder",
-    emoji: "🎹",
-    bio: "Behind every track is a whole bunch of late nights, weird samples, and a stubborn refusal to make music that sounds like everyone else. They handle the beats, the arrangements, the weird synths — basically all the stuff that makes a song feel like *something*.",
-    tags: ["Original Beats", "Sound Design", "Mixing", "Mastering"],
-  },
+  { tag: "JT",  name: "JT",     role: "Producer",  bio: "Beats, mixes, and the back end of every release.", photo: "/jt-photo.jpg" },
+  { tag: "BK",  name: "Booker", role: "DJ Booker",  bio: "Live sets, club nights, and private events.",     photo: "/booker-photo.jpg" },
 ];
 
 export default function About() {
-  const ref = useRef<HTMLElement>(null);
-  const inView = useInView(ref);
-
   return (
     <section
-      id="about"
-      ref={ref}
-      className="section-padding"
-      style={{ background: "var(--bg)", borderBottom: "2px solid var(--text)" }}
+      id="members"
+      style={{ padding: "110px 40px", borderBottom: "2px solid var(--ink)" }}
+      className="members-section"
     >
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <SectionHead num="01" label="MEMBERS" title={<span>Our Creatives</span>} />
 
-        {/* Heading block */}
         <div
-          style={{
-            marginBottom: "4rem",
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(24px)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
-          }}
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, marginTop: 56 }}
+          className="members-grid"
         >
-          <p className="eyebrow" style={{ marginBottom: "0.75rem" }}>Who we are</p>
-          <h2
-            style={{
-              fontFamily: "var(--font-brand)",
-              fontWeight: 900,
-              fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.05,
-              marginBottom: "1.25rem",
-              color: "var(--text)",
-            }}
-          >
-            Two artists,{" "}
-            <span style={{ color: "var(--accent)" }}>one vision</span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-brand)",
-              fontSize: "1.05rem",
-              fontWeight: 500,
-              color: "var(--text-muted)",
-              maxWidth: "560px",
-              lineHeight: 1.7,
-            }}
-          >
-            Open Book started because we wanted a space where music could be made and shared
-            without any of the usual industry nonsense. We&apos;re a DJ and a producer
-            who genuinely love what we do — and we think that comes through in everything we put out.
-          </p>
-        </div>
-
-        {/* Member cards */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "2rem",
-          }}
-        >
-          {members.map((member, i) => (
-            <div
-              key={member.role}
-              className="card"
-              style={{
-                padding: "2.25rem",
-                opacity: inView ? 1 : 0,
-                transform: inView ? "translateY(0)" : "translateY(32px)",
-                transition: `opacity 0.6s ease ${i * 0.12}s, transform 0.6s ease ${i * 0.12}s`,
-              }}
-            >
-              {/* Avatar block */}
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background: i === 0 ? "var(--accent)" : "var(--bg)",
-                  border: "2px solid var(--text)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "2rem",
-                  marginBottom: "1.5rem",
-                  borderRadius: "var(--radius)",
-                }}
-              >
-                {member.emoji}
-              </div>
-
-              {/* Role label */}
-              <span
-                style={{
-                  fontFamily: "var(--font-brand)",
-                  fontWeight: 800,
-                  fontSize: "0.7rem",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "var(--accent)",
-                  display: "inline-block",
-                  marginBottom: "0.5rem",
-                  borderBottom: "2px solid var(--accent)",
-                  paddingBottom: "1px",
-                }}
-              >
-                {member.role}
-              </span>
-
-              <h3
-                style={{
-                  fontFamily: "var(--font-brand)",
-                  fontWeight: 900,
-                  fontSize: "1.5rem",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "1rem",
-                  color: "var(--text)",
-                }}
-              >
-                {member.name}
-              </h3>
-
-              <p
-                style={{
-                  fontFamily: "var(--font-brand)",
-                  fontSize: "0.93rem",
-                  fontWeight: 500,
-                  color: "var(--text-muted)",
-                  lineHeight: 1.75,
-                  marginBottom: "1.5rem",
-                }}
-              >
-                {member.bio}
-              </p>
-
-              {/* Tags */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                {member.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      fontFamily: "var(--font-brand)",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      color: "var(--text)",
-                      border: "2px solid var(--border-muted)",
-                      borderRadius: "var(--radius-sm)",
-                      padding: "0.2rem 0.65rem",
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+          {members.map((m, i) => (
+            <MemberCard key={m.tag} member={m} index={i} />
           ))}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 767px) {
+          .members-section { padding: 60px 20px !important; }
+          .members-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+        }
+      `}</style>
     </section>
+  );
+}
+
+function MemberCard({ member, index }: { member: (typeof members)[0]; index: number }) {
+  return (
+    <div
+      className="card"
+      style={{ padding: 0, overflow: "hidden", transition: "transform .15s, box-shadow .15s" }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translate(-3px,-3px)";
+        e.currentTarget.style.boxShadow = "7px 7px 0 0 var(--amber)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translate(0,0)";
+        e.currentTarget.style.boxShadow = "var(--shadow)";
+      }}
+    >
+      {/* Photo */}
+      <div
+        style={{ aspectRatio: "4/5", borderBottom: "2px solid var(--ink)", position: "relative", overflow: "hidden" }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={member.photo}
+          alt={member.name}
+          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", display: "block" }}
+        />
+        <span className="mono" style={{ position: "absolute", top: 12, left: 14, fontSize: 11, color: "var(--amber)", textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
+          0{index + 1}
+        </span>
+      </div>
+
+      {/* Info */}
+      <div style={{ padding: 22 }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(24px,3vw,36px)", letterSpacing: "-0.02em" }}>
+            {member.name}
+          </div>
+          <span className="label" style={{ whiteSpace: "nowrap" }}>{member.role}</span>
+        </div>
+        <p style={{ margin: "10px 0 0", fontSize: 15, lineHeight: 1.5, color: "var(--ink-dim)" }}>{member.bio}</p>
+      </div>
+    </div>
   );
 }
